@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Xogaha Dugsiyada M.m.dh.buur</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    :root {
+      --bg: #f0f4fc;
+      --bg-card: rgba(255,255,255,0.55);
+      --text: #0f172a;
+      --primary: #2563eb;
+      --primary-2: #7c3aed;
+      --primary-glow: rgba(37,99,235,0.35);
+      --danger: #ef4444;
+      --success: #10b981;
+      --border: rgba(15,23,42,0.08);
+      --nav-h: 70px;
+      --radius: 20px;
+      --radius-sm: 14px;
+      --radius-lg: 28px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 24px 64px rgba(0,0,0,0.18);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height:100vh;
+      padding-bottom: calc(var(--nav-h) + 20px);
+      overflow-x:hidden;
+      transition: background .35s, color .35s;
+    }
+    body.dark {
+      --bg: #0a0e17;
+      --bg-card: rgba(18,22,33,0.7);
+      --text: #eef2f6;
+      --border: rgba(255,255,255,0.08);
+    }
+    ::-webkit-scrollbar { width:6px; height:6px; }
+    ::-webkit-scrollbar-thumb { background:var(--primary); border-radius:99px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+
+    #loader {
+      position:fixed; inset:0; z-index:99999;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background: radial-gradient(circle at 25% 30%, #1e2a4a, #070a12);
+      transition: opacity .8s ease, visibility .8s;
+      backdrop-filter: blur(24px);
+    }
+    #loader.hide { opacity:0; visibility:hidden; pointer-events:none; }
+    .liquid-orb {
+      width:130px; height:130px; border-radius:50%;
+      background: linear-gradient(135deg, rgba(37,99,235,0.4), rgba(124,58,237,0.25));
+      backdrop-filter: blur(40px);
+      border: 2px solid rgba(255,255,255,0.18);
+      box-shadow: 0 0 80px rgba(37,99,235,0.5), inset 0 0 50px rgba(255,255,255,0.08);
+      display:flex; align-items:center; justify-content:center;
+      animation: orbPulse 2s infinite ease-in-out;
+    }
+    .liquid-orb i { font-size:52px; color:#fff; filter:drop-shadow(0 0 24px rgba(37,99,235,0.9)); }
+    @keyframes orbPulse {
+      0%,100% { transform:scale(1); box-shadow:0 0 80px rgba(37,99,235,0.5); }
+      50% { transform:scale(1.08); box-shadow:0 0 120px rgba(37,99,235,0.85); }
+    }
+    .loader-txt {
+      margin-top:36px; color:#fff; font-weight:700; letter-spacing:5px;
+      font-size:13px; text-transform:uppercase; opacity:.85;
+    }
+    .loader-bar {
+      margin-top:20px; width:180px; height:3px; background:rgba(255,255,255,0.12);
+      border-radius:99px; overflow:hidden;
+    }
+    .loader-bar span {
+      display:block; height:100%; width:40%;
+      background:linear-gradient(90deg,var(--primary),var(--primary-2));
+      border-radius:99px; animation:loadBar 1.4s infinite ease-in-out;
+    }
+    @keyframes loadBar { 0%{transform:translateX(-100%);} 100%{transform:translateX(350%);} }
+
+    #loginPage {
+      position:fixed; inset:0; z-index:10000;
+      display:none; align-items:center; justify-content:center;
+      background: radial-gradient(circle at 30% 30%, #1a2332, #070a12);
+      padding:24px;
+    }
+    .login-card {
+      width:100%; max-width:380px;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(28px);
+      border-radius: var(--radius-lg);
+      padding: 44px 30px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--shadow-lg);
+      text-align:center;
+    }
+    .login-card img {
+      width:88px; height:88px; border-radius:50%; object-fit:cover;
+      margin-bottom:18px; border:2px solid var(--primary);
+      box-shadow:0 0 32px rgba(37,99,235,0.4);
+    }
+    .login-card h2 { font-size:24px; font-weight:800; margin-bottom:6px; color:#fff; letter-spacing:-.5px; }
+    .login-card p { font-size:13px; color:#94a3b8; margin-bottom:28px; }
+    .login-card input {
+      width:100%; padding:16px 18px; border-radius:var(--radius-sm);
+      border:1px solid rgba(255,255,255,0.12); background:rgba(0,0,0,0.3);
+      color:#fff; font-size:16px; outline:none; margin-bottom:16px;
+      font-family:inherit; transition:border .2s, box-shadow .2s;
+    }
+    .login-card input:focus { border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,0.15); }
+    .login-card button {
+      width:100%; padding:16px; border-radius:var(--radius-sm); border:none;
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      color:#fff; font-weight:700; font-size:16px; cursor:pointer;
+      font-family:inherit; transition:transform .2s, box-shadow .2s;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+    }
+    .login-card button:hover { transform:translateY(-2px); box-shadow:0 12px 32px var(--primary-glow); }
+    .login-hint { font-size:12px; color:#64748b; margin-top:16px; }
+
+    #app { max-width:1440px; margin:0 auto; padding:16px; transition:filter .3s; }
+    #app.blur { filter:blur(14px); pointer-events:none; user-select:none; }
+
+    .app-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 0 20px; gap:12px;
+    }
+    .logo-area { display:flex; align-items:center; gap:12px; min-width:0; }
+    .logo-area img {
+      width:48px; height:48px; border-radius:50%; object-fit:cover;
+      border:2px solid var(--primary); box-shadow:0 0 20px var(--primary-glow); flex-shrink:0;
+    }
+    .logo-area .sys-name {
+      font-weight:800; font-size:17px; letter-spacing:-.4px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .header-actions { display:flex; gap:8px; flex-shrink:0; }
+    .icon-btn {
+      width:44px; height:44px; border-radius:50%;
+      background: var(--bg-card); backdrop-filter:blur(16px);
+      border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:all .2s; color:inherit; font-size:17px;
+    }
+    .icon-btn:hover { background:var(--primary); color:#fff; transform:translateY(-2px); }
+    .icon-btn:active { transform:scale(0.94); }
+
+    .page { display:none; animation:pageIn .4s cubic-bezier(.16,1,.3,1); }
+    .page.active { display:block; }
+    @keyframes pageIn { from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
+    .page-title {
+      font-size:22px; font-weight:800; margin-bottom:16px;
+      display:flex; align-items:center; gap:10px; letter-spacing:-.5px;
+    }
+    .page-title i { color:var(--primary); }
+
+    .glass {
+      background: var(--bg-card); backdrop-filter: blur(22px);
+      border-radius: var(--radius-lg); padding:20px;
+      border:1px solid var(--border); box-shadow: var(--shadow);
+      margin-bottom:16px; transition:background .35s, border .35s;
+    }
+
+    .slider-wrap {
+      position:relative; width:100%; border-radius:var(--radius-lg);
+      overflow:hidden; aspect-ratio:16/9; background:#0f172a;
+      box-shadow: var(--shadow-lg);
+    }
+    .slide {
+      position:absolute; inset:0; opacity:0; transition:opacity .8s ease;
+      background-size:cover; background-position:center;
+    }
+    .slide.on { opacity:1; }
+    .slide::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.55));
+    }
+    .slider-dots {
+      position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+      display:flex; gap:8px; z-index:2;
+    }
+    .sdot {
+      width:8px; height:8px; border-radius:99px; background:rgba(255,255,255,0.5);
+      cursor:pointer; transition:all .3s;
+    }
+    .sdot.on { background:#fff; width:26px; }
+
+    .dash-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px;
+    }
+    .dash-card {
+      background: var(--bg-card); backdrop-filter:blur(22px);
+      border-radius:var(--radius); padding:18px;
+      border:1px solid var(--border); transition:transform .25s, box-shadow .25s;
+    }
+    .dash-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+    .dash-card .dc-label {
+      font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.6px; opacity:.55; margin-bottom:8px;
+    }
+
+    .chart-box { background:var(--bg-card); backdrop-filter:blur(22px); border-radius:var(--radius-lg); padding:20px; border:1px solid var(--border); margin-bottom:16px; }
+    .chart-box h4 { font-size:15px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+    .chart-box h4 i { color:var(--primary); }
+
+    .tbl-wrap {
+      overflow-x:auto; border-radius:var(--radius);
+      background:var(--bg-card); backdrop-filter:blur(22px);
+      border:1px solid var(--border); padding:4px;
+    }
+    table { width:100%; border-collapse:collapse; font-size:13.5px; }
+    th {
+      text-align:left; padding:14px 16px; font-weight:700;
+      font-size:12px; text-transform:uppercase; letter-spacing:.4px;
+      opacity:.65; border-bottom:1px solid var(--border); white-space:nowrap;
+    }
+    td { padding:14px 16px; border-bottom:1px solid var(--border); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(37,99,235,0.05); }
+    .empty-state { padding:40px; text-align:center; opacity:.5; font-size:14px; }
+
+    .btn {
+      padding:12px 22px; border-radius:var(--radius-sm); border:none;
+      font-weight:600; font-size:14px; cursor:pointer; transition:all .2s;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      background:var(--bg-card); border:1px solid var(--border); color:inherit;
+      font-family:inherit; backdrop-filter:blur(12px);
+    }
+    .btn:hover { transform:translateY(-2px); }
+    .btn:active { transform:scale(0.96); }
+    .btn-primary {
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      color:#fff; border:none; box-shadow:0 4px 16px var(--primary-glow);
+    }
+    .btn-primary:hover { box-shadow:0 8px 28px var(--primary-glow); }
+    .btn-danger { background:var(--danger); color:#fff; border:none; }
+    .btn-success { background:var(--success); color:#fff; border:none; }
+    .btn-sm { padding:8px 14px; font-size:12.5px; }
+    .btn-block { width:100%; }
+
+    .fg { margin-bottom:14px; }
+    .fg label { display:block; font-size:12.5px; font-weight:600; margin-bottom:6px; opacity:.7; }
+    .fc {
+      width:100%; padding:13px 15px; border-radius:var(--radius-sm);
+      border:1px solid var(--border); background:rgba(255,255,255,0.5);
+      font-size:14.5px; font-family:inherit; outline:none; color:inherit;
+      transition:border .2s, box-shadow .2s;
+    }
+    body.dark .fc { background:rgba(0,0,0,0.25); }
+    .fc:focus { border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,0.12); }
+
+    .bottom-nav {
+      position:fixed; bottom:0; left:0; right:0; height:var(--nav-h);
+      background:var(--bg-card); backdrop-filter:blur(30px);
+      border-top:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-around;
+      padding:0 6px; z-index:1000;
+      box-shadow:0 -8px 32px rgba(0,0,0,0.08);
+      transition:background .35s, border .35s;
+    }
+    .nav-btn {
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+      padding:6px 8px; border-radius:12px; cursor:pointer;
+      transition:all .2s; font-size:9.5px; font-weight:600;
+      color:inherit; opacity:.5; border:none; background:transparent;
+      font-family:inherit; flex:1; max-width:70px;
+    }
+    .nav-btn i { font-size:19px; transition:transform .2s; }
+    .nav-btn.on { opacity:1; color:var(--primary); }
+    .nav-btn.on i { transform:scale(1.12) translateY(-1px); }
+    .nav-btn:active { transform:scale(0.92); }
+
+    .sidebar {
+      position:fixed; top:0; left:-320px; width:300px; height:100vh;
+      background:var(--bg-card); backdrop-filter:blur(30px);
+      border-right:1px solid var(--border); z-index:2000;
+      transition:left .35s cubic-bezier(.16,1,.3,1);
+      padding:20px 16px; overflow-y:auto;
+      box-shadow:8px 0 40px rgba(0,0,0,0.12);
+    }
+    .sidebar.open { left:0; }
+    .sb-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .sb-head h4 { font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px; }
+    .sheet-link {
+      padding:12px 16px; border-radius:var(--radius-sm); cursor:pointer;
+      display:flex; align-items:center; gap:10px; font-weight:500;
+      font-size:14px; margin-bottom:4px; transition:all .2s;
+    }
+    .sheet-link:hover { background:rgba(37,99,235,0.1); }
+    .sheet-link.active { background:var(--primary); color:#fff; }
+    .sheet-link i { width:20px; text-align:center; }
+    .sb-divider { height:1px; background:var(--border); margin:16px 0; }
+
+    .toast {
+      position:fixed; bottom:calc(var(--nav-h) + 20px); left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:rgba(15,23,42,0.95); backdrop-filter:blur(20px);
+      color:#fff; padding:14px 26px; border-radius:99px;
+      font-weight:600; font-size:13.5px; z-index:9999;
+      box-shadow:0 12px 40px rgba(0,0,0,0.3);
+      opacity:0; transition:all .35s; pointer-events:none;
+      border:1px solid rgba(255,255,255,0.1); max-width:90vw;
+      text-align:center;
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    .inline-loader {
+      display:inline-block; width:16px; height:16px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-top-color:#fff; border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin { to{transform:rotate(360deg);} }
+
+    .admin-item {
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px 12px; border-radius:12px; margin-bottom:8px;
+      background:rgba(37,99,235,0.06); border:1px solid var(--border);
+    }
+    .admin-item img { width:44px; height:44px; border-radius:10px; object-fit:cover; flex-shrink:0; }
+    .admin-item .ai-txt { flex:1; min-width:0; font-size:12.5px; word-break:break-all; }
+    .admin-item .ai-txt strong { display:block; font-size:13px; margin-bottom:2px; }
+
+    /* ===== DASHBOARD BUILDER ===== */
+    .dash-builder {
+      background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(124,58,237,0.06));
+      border: 1.5px dashed var(--primary);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .builder-actions {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+    }
+
+    /* Title block */
+    .title-block {
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1.5px solid rgba(124,58,237,0.35);
+      animation: pageIn .25s ease;
+    }
+    body.dark .title-block { background: rgba(0,0,0,0.25); }
+    .title-block-header {
+      display: flex; gap: 8px; align-items: flex-end; margin-bottom: 10px;
+    }
+    .title-block-header .fg { flex: 1; margin-bottom: 0; }
+    .title-block-header .title-remove {
+      width: 36px; height: 36px; border-radius: 10px; border: none;
+      background: rgba(239,68,68,0.15); color: var(--danger);
+      cursor: pointer; font-size: 13px; transition: all .2s;
+      flex-shrink: 0;
+    }
+    .title-block-header .title-remove:hover { background: var(--danger); color: #fff; }
+
+    /* ===== SUB TITLE + DATA ENTRY ROWS ===== */
+    .entries-list { margin-top: 8px; }
+
+    .entry-row {
+      display: flex; gap: 8px; align-items: flex-end; margin-bottom: 8px;
+      padding: 10px;
+      background: rgba(37,99,235,0.06);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      animation: pageIn .25s ease;
+    }
+    body.dark .entry-row { background: rgba(37,99,235,0.12); }
+    .entry-row .fg { flex: 1; margin-bottom: 0; min-width: 80px; }
+    .entry-row .entry-remove {
+      width: 36px; height: 36px; border-radius: 10px; border: none;
+      background: rgba(239,68,68,0.15); color: var(--danger);
+      cursor: pointer; font-size: 13px; transition: all .2s;
+      flex-shrink: 0;
+    }
+    .entry-row .entry-remove:hover { background: var(--danger); color: #fff; }
+
+    /* Rows for "Add Sub Tittle" — only shows sub title field */
+    .entry-row.sub-only .fg[data-role="value"] {
+      display: none;
+    }
+    /* Rows for "Add Data Entry" — only shows value field */
+    .entry-row.value-only .fg[data-role="name"] {
+      display: none;
+    }
+
+    /* Add buttons (gooni ah) */
+    .add-buttons-row {
+      display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+    }
+    .btn-add-sub {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 10px; border: none;
+      background: rgba(124,58,237,0.15); color: var(--primary-2);
+      font-size: 12.5px; font-weight: 600; cursor: pointer;
+      transition: all .2s; font-family: inherit;
+    }
+    .btn-add-sub:hover { background: var(--primary-2); color: #fff; }
+
+    .btn-add-value {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 10px; border: none;
+      background: rgba(16,185,129,0.15); color: var(--success);
+      font-size: 12.5px; font-weight: 600; cursor: pointer;
+      transition: all .2s; font-family: inherit;
+    }
+    .btn-add-value:hover { background: var(--success); color: #fff; }
+
+    .edit-banner {
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.4);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #b45309;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    body.dark .edit-banner { color: #fbbf24; }
+
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 16px 0 10px;
+    }
+    .section-header h5 {
+      font-size: 13px; font-weight: 700; opacity: .7;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .section-header h5 i { color: var(--primary); }
+
+    .chart-row {
+      display: grid; grid-template-columns: 1fr; gap: 16px;
+    }
+    @media (min-width: 900px) {
+      .chart-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    .flex { display:flex; } .items-center { align-items:center; }
+    .justify-between { justify-content:space-between; } .gap-2 { gap:8px; }
+    .gap-3 { gap:12px; } .flex-wrap { flex-wrap:wrap; } .flex-1 { flex:1; }
+    .mt-2 { margin-top:8px; } .mt-3 { margin-top:12px; } .mt-4 { margin-top:16px; }
+    .mb-2 { margin-bottom:8px; } .mb-3 { margin-bottom:12px; } .mb-4 { margin-bottom:16px; }
+    .text-sm { font-size:13px; } .text-xs { font-size:11px; }
+    .opacity-60 { opacity:.6; } .w-full { width:100%; }
+    .hidden { display:none!important; } .text-center { text-align:center; }
+    .font-bold { font-weight:700; } .text-danger { color:var(--danger); }
+    .text-success { color:var(--success); } .text-primary { color:var(--primary); }
+
+    @media (max-width:640px) {
+      #app { padding:12px; }
+      :root { --nav-h:64px; }
+      .nav-btn { font-size:9px; padding:4px 6px; }
+      .nav-btn i { font-size:17px; }
+      .page-title { font-size:19px; }
+      .dash-grid { grid-template-columns:repeat(2,1fr); }
+      .logo-area .sys-name { font-size:15px; max-width:140px; }
+      .title-block-header { flex-direction: column; align-items: stretch; }
+      .title-block-header .title-remove { width: 100%; }
+    }
+    @media (min-width:1024px) {
+      #app { padding:24px 32px; }
+      .dash-grid { grid-template-columns:repeat(4,1fr); }
+      .bottom-nav { border-radius:0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="liquid-orb"><i class="fas fa-graduation-cap"></i></div>
+    <div class="loader-txt">Xogaha Dugsiyada</div>
+    <div class="loader-bar"><span></span></div>
+  </div>
+
+  <div id="loginPage">
+    <div class="login-card">
+      <img src="https://i.postimg.cc/WpW4dHkx/1791318500798.jpg" alt="Logo">
+      <h2>Xogaha Dugsiyada</h2>
+      <p>M.m.dh.buur — Management System</p>
+      <input type="password" id="loginPass" placeholder="Geli Password-ka" autocomplete="off">
+      <button onclick="doLogin()"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+      <div class="login-hint">Password: 0808</div>
+    </div>
+  </div>
+
+  <div id="app" class="blur">
+    <header class="app-header">
+      <div class="logo-area">
+        <img src="https://i.postimg.cc/WpW4dHkx/1791318500798.jpg" id="hLogo" alt="Logo">
+        <span class="sys-name" id="hName">Xogaha Dugsiyada</span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSidebar()" title="Sheets"><i class="fas fa-table-list"></i></button>
+        <button class="icon-btn" onclick="toggleDark()" title="Dark/Light"><i class="fas fa-moon" id="darkIcon"></i></button>
+        <button class="icon-btn" onclick="doLogout()" title="Logout"><i class="fas fa-right-from-bracket"></i></button>
+      </div>
+    </header>
+
+    <div class="page active" id="p-home">
+      <div class="slider-wrap" id="sliderWrap">
+        <div class="slider-dots" id="sliderDots"></div>
+      </div>
+      <div class="glass mt-4 text-center">
+        <i class="fas fa-graduation-cap" style="font-size:42px;color:var(--primary);margin-bottom:12px;"></i>
+        <h3 style="font-size:20px;font-weight:800;margin-bottom:4px;">Ku soo dhawoow</h3>
+        <p class="text-sm opacity-60">Xogaha Dugsiyada M.m.dh.buur — Nidaamka Casriga ah</p>
+      </div>
+    </div>
+
+    <div class="page" id="p-dashboard">
+      <div class="page-title"><i class="fas fa-chart-pie"></i> Dashboard</div>
+      <div class="dash-grid" id="dashGrid"></div>
+      <div class="chart-row mt-4">
+        <div class="chart-box">
+          <h4><i class="fas fa-chart-bar"></i> Tirada Dugsiyada (Bar Chart)</h4>
+          <canvas id="chartSchools" height="200"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4><i class="fas fa-chart-pie"></i> Qaybinta (Pie Chart)</h4>
+          <canvas id="chartPie" height="200"></canvas>
+        </div>
+      </div>
+      <div class="chart-box">
+        <h4><i class="fas fa-chart-line"></i> Isbarbardhigga (Line Chart)</h4>
+        <canvas id="chartLine" height="180"></canvas>
+      </div>
+    </div>
+
+    <div class="page" id="p-guud">
+      <div class="page-title"><i class="fas fa-database"></i> Xogta Guud</div>
+      <div class="glass">
+        <div class="flex gap-2 mb-3 flex-wrap">
+          <button class="btn btn-primary" onclick="showUpload('guud')"><i class="fas fa-upload"></i> Upload Now</button>
+          <button class="btn" onclick="showView('guud')"><i class="fas fa-eye"></i> View Data</button>
+        </div>
+        <div id="guud-upload" class="hidden">
+          <div class="fg"><label>School Name</label><input class="fc" id="guudSchool" placeholder="Geli magaca dugsiga"></div>
+          <div class="fg"><label>Date & Time</label><input class="fc" type="datetime-local" id="guudDate"></div>
+          <div class="fg"><label>Upload Documents</label><input class="fc" type="file" id="guudFile"></div>
+          <button class="btn btn-primary btn-block" onclick="submitUpload('guud')"><i class="fas fa-check"></i> Submit</button>
+        </div>
+        <div id="guud-view" class="hidden">
+          <div class="fg"><label>Filter by School</label><select class="fc" id="guudFilter" onchange="renderTable('guud')"><option value="">All Schools</option></select></div>
+          <div class="flex gap-2 mb-3">
+            <button class="btn btn-sm" onclick="downloadExcel('guud')"><i class="fas fa-file-excel"></i> Excel</button>
+            <button class="btn btn-sm" onclick="downloadPDF('guud')"><i class="fas fa-file-pdf"></i> PDF</button>
+          </div>
+          <div class="tbl-wrap" id="guudTable"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="p-dawliga">
+      <div class="page-title"><i class="fas fa-landmark"></i> Xogta Dawliga Ah</div>
+      <div class="glass">
+        <div class="flex gap-2 mb-3 flex-wrap">
+          <button class="btn btn-primary" onclick="showUpload('dawliga')"><i class="fas fa-upload"></i> Upload Now</button>
+          <button class="btn" onclick="showView('dawliga')"><i class="fas fa-eye"></i> View Data</button>
+        </div>
+        <div id="dawliga-upload" class="hidden">
+          <div class="fg"><label>School Name</label><input class="fc" id="dawligaSchool" placeholder="Geli magaca dugsiga"></div>
+          <div class="fg"><label>Date & Time</label><input class="fc" type="datetime-local" id="dawligaDate"></div>
+          <div class="fg"><label>Upload Documents</label><input class="fc" type="file" id="dawligaFile"></div>
+          <button class="btn btn-primary btn-block" onclick="submitUpload('dawliga')"><i class="fas fa-check"></i> Submit</button>
+        </div>
+        <div id="dawliga-view" class="hidden">
+          <div class="fg"><label>Filter by School</label><select class="fc" id="dawligaFilter" onchange="renderTable('dawliga')"><option value="">All Schools</option></select></div>
+          <div class="flex gap-2 mb-3">
+            <button class="btn btn-sm" onclick="downloadExcel('dawliga')"><i class="fas fa-file-excel"></i> Excel</button>
+            <button class="btn btn-sm" onclick="downloadPDF('dawliga')"><i class="fas fa-file-pdf"></i> PDF</button>
+          </div>
+          <div class="tbl-wrap" id="dawligaTable"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="p-private">
+      <div class="page-title"><i class="fas fa-lock"></i> Xogta Private Ah</div>
+      <div class="glass">
+        <div class="flex gap-2 mb-3 flex-wrap">
+          <button class="btn btn-primary" onclick="showUpload('private')"><i class="fas fa-upload"></i> Upload Now</button>
+          <button class="btn" onclick="showView('private')"><i class="fas fa-eye"></i> View Data</button>
+        </div>
+        <div id="private-upload" class="hidden">
+          <div class="fg"><label>School Name</label><input class="fc" id="privateSchool" placeholder="Geli magaca dugsiga"></div>
+          <div class="fg"><label>Date & Time</label><input class="fc" type="datetime-local" id="privateDate"></div>
+          <div class="fg"><label>Upload Documents</label><input class="fc" type="file" id="privateFile"></div>
+          <button class="btn btn-primary btn-block" onclick="submitUpload('private')"><i class="fas fa-check"></i> Submit</button>
+        </div>
+        <div id="private-view" class="hidden">
+          <div class="fg"><label>Filter by School</label><select class="fc" id="privateFilter" onchange="renderTable('private')"><option value="">All Schools</option></select></div>
+          <div class="flex gap-2 mb-3">
+            <button class="btn btn-sm" onclick="downloadExcel('private')"><i class="fas fa-file-excel"></i> Excel</button>
+            <button class="btn btn-sm" onclick="downloadPDF('private')"><i class="fas fa-file-pdf"></i> PDF</button>
+          </div>
+          <div class="tbl-wrap" id="privateTable"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="p-admin">
+      <div class="page-title"><i class="fas fa-user-shield"></i> Admin Panel</div>
+
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;"><i class="fas fa-palette text-primary"></i> Appearance</h4>
+        <div class="fg"><label>System Name (Title)</label><input class="fc" id="admName" placeholder="Xogaha Dugsiyada"></div>
+        <div class="fg"><label>Logo URL</label><input class="fc" id="admLogo" placeholder="https://..."></div>
+        <button class="btn btn-primary" onclick="saveAppearance()"><i class="fas fa-save"></i> Save</button>
+      </div>
+
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;"><i class="fas fa-key text-primary"></i> Change Admin Password</h4>
+        <div class="fg"><label>New Password</label><input class="fc" type="password" id="admNewPass" placeholder="Geli password cusub"></div>
+        <button class="btn btn-primary" onclick="changePassword()"><i class="fas fa-check"></i> Update</button>
+      </div>
+
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;"><i class="fas fa-images text-primary"></i> Home Slides</h4>
+        <div class="fg"><label>Image URL</label><input class="fc" id="slideUrl" placeholder="https://..."></div>
+        <button class="btn btn-primary" onclick="addSlide()"><i class="fas fa-plus"></i> Add Slide</button>
+        <div id="slideList" class="mt-3"></div>
+      </div>
+
+      <!-- ===== DASHBOARD BUILDER ===== -->
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;">
+          <i class="fas fa-chart-simple text-primary"></i> Dashboard Data Builder
+          <span class="text-xs opacity-60" style="font-weight:400;display:block;margin-top:4px;">Ku dar Magaca Dugsiga, Titles (Categories), Sub Titles, iyo Data Entries — mid walba goonidiisa</span>
+        </h4>
+
+        <div id="editBanner" class="edit-banner hidden">
+          <span><i class="fas fa-pen"></i> Waxaad beddelaysaa: <strong id="editBannerTitle"></strong></span>
+          <button class="btn btn-sm" onclick="cancelEdit()"><i class="fas fa-xmark"></i> Cancel</button>
+        </div>
+
+        <div class="dash-builder" id="dashBuilder">
+          <!-- MAGACA DUGSIGA -->
+          <div class="fg">
+            <label><i class="fas fa-school"></i> Magaca Dugsiga (School Name)</label>
+            <input class="fc" id="buildSchool" placeholder="Tusaale: Dugsiyada Hargeisa" oninput="updateBuilderPreview()">
+          </div>
+
+          <!-- ===== TITLES SECTION ===== -->
+          <div class="section-header">
+            <h5><i class="fas fa-heading"></i> Titles (Categories)</h5>
+            <button class="btn btn-sm btn-primary" onclick="addTitleBlock()" type="button">
+              <i class="fas fa-plus"></i> Add Title
+            </button>
+          </div>
+          <div id="titlesContainer"></div>
+
+          <!-- ACTIONS -->
+          <div class="builder-actions">
+            <button class="btn btn-primary flex-1" onclick="submitBuilder()">
+              <i class="fas fa-check"></i> <span id="submitBtnText">Submit to Dashboard</span>
+            </button>
+            <button class="btn" onclick="resetBuilder()" type="button">
+              <i class="fas fa-rotate-left"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="mt-4">
+          <h5 class="mb-2 text-sm font-bold opacity-60"><i class="fas fa-eye"></i> Preview</h5>
+          <div id="builderPreview" class="text-sm opacity-60">Weli waxba lama gelin...</div>
+        </div>
+      </div>
+
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;">
+          <i class="fas fa-layer-group text-primary"></i> Dashboard Entries
+          <span class="text-xs opacity-60" style="font-weight:400;" id="dashCountLabel"></span>
+        </h4>
+        <div id="dashList"></div>
+      </div>
+
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;"><i class="fas fa-table text-primary"></i> All Sheets Management</h4>
+        <div id="sheetManager"></div>
+      </div>
+
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;color:var(--danger);"><i class="fas fa-triangle-exclamation"></i> Reset Spreadsheet</h4>
+        <div class="fg"><label>Admin Password</label><input class="fc" type="password" id="resetPass" placeholder="Geli password-ka"></div>
+        <button class="btn btn-danger" onclick="resetSpreadsheet()"><i class="fas fa-trash-can"></i> Reset All Data</button>
+      </div>
+
+      <div class="glass">
+        <h4 class="mb-3" style="font-size:15px;font-weight:700;"><i class="fas fa-print text-primary"></i> Print / Download</h4>
+        <div class="flex gap-2 flex-wrap">
+          <button class="btn" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+          <button class="btn" onclick="downloadExcel('guud')"><i class="fas fa-file-excel"></i> Excel</button>
+          <button class="btn" onclick="downloadPDF('guud')"><i class="fas fa-file-pdf"></i> PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <h4><i class="fas fa-table-list text-primary"></i> Sheets</h4>
+      <button class="icon-btn" onclick="toggleSidebar()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div id="sheetLinks"></div>
+    <div class="sb-divider"></div>
+    <div class="sheet-link" onclick="openSheet('guud')"><i class="fas fa-database"></i> Xogta Guud</div>
+    <div class="sheet-link" onclick="openSheet('dawliga')"><i class="fas fa-landmark"></i> Xogta Dawliga</div>
+    <div class="sheet-link" onclick="openSheet('private')"><i class="fas fa-lock"></i> Xogta Private</div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn on" data-p="home" onclick="go('home')"><i class="fas fa-house"></i> Home</button>
+    <button class="nav-btn" data-p="dashboard" onclick="go('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</button>
+    <button class="nav-btn" data-p="guud" onclick="go('guud')"><i class="fas fa-database"></i> Guud</button>
+    <button class="nav-btn" data-p="dawliga" onclick="go('dawliga')"><i class="fas fa-landmark"></i> Dawliga</button>
+    <button class="nav-btn" data-p="private" onclick="go('private')"><i class="fas fa-lock"></i> Private</button>
+    <button class="nav-btn" data-p="admin" onclick="go('admin')"><i class="fas fa-user-shield"></i> Admin</button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ===== STATE =====
+    const S = {
+      page: 'home',
+      dark: false,
+      pass: '0808',
+      name: 'Xogaha Dugsiyada',
+      logo: 'https://i.postimg.cc/WpW4dHkx/1791318500798.jpg',
+      sheets: { guud: [], dawliga: [], private: [] },
+      slides: [
+        'https://picsum.photos/1200/675?random=10',
+        'https://picsum.photos/1200/675?random=20',
+        'https://picsum.photos/1200/675?random=30'
+      ],
+      // Dashboard entries — { id, school, titles: [{ name, entries: [{ name, value }] }] }
+      dashEntries: [
+        { id: 1, school: 'Dugsiyada Hargeisa', titles: [
+          { name: 'Tirada Ardayda', entries: [
+            { name: 'Lab', value: '60' },
+            { name: 'Dhadig', value: '50' },
+            { name: 'Wadar', value: '110' }
+          ]}
+        ]},
+        { id: 2, school: 'Dugsiyada Burco', titles: [
+          { name: 'Tirada Ardayda', entries: [
+            { name: 'Lab', value: '45' },
+            { name: 'Dhadig', value: '40' },
+            { name: 'Wadar', value: '85' }
+          ]},
+          { name: 'Dakhliga Bishan', entries: [
+            { name: 'Lacag', value: '5000' },
+            { name: 'Kharash', value: '2000' }
+          ]}
+        ]}
+      ],
+      editingId: null,
+      charts: {}
+    };
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hide');
+        document.getElementById('loginPage').style.display = 'flex';
+      }, 2400);
+
+      loadState();
+      applyLook();
+      renderSlides();
+      renderDashboard();
+      renderAdminLists();
+      renderSheetLinks();
+      resetBuilder();
+
+      document.getElementById('loginPass').addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+      });
+
+      setInterval(nextSlide, 5500);
+    });
+
+    // ===== LOGIN =====
+    function doLogin() {
+      const v = document.getElementById('loginPass').value.trim();
+      if (v === S.pass) {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('app').classList.remove('blur');
+        toast('Ku soo dhawoow! ✅');
+      } else {
+        toast('Password khaldan ❌');
+      }
+    }
+    function doLogout() {
+      document.getElementById('app').classList.add('blur');
+      document.getElementById('loginPage').style.display = 'flex';
+      document.getElementById('loginPass').value = '';
+      toast('Waad ka baxday');
+    }
+
+    // ===== NAV =====
+    function go(p) {
+      S.page = p;
+      document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+      document.getElementById('p-' + p).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('on'));
+      document.querySelector(`.nav-btn[data-p="${p}"]`).classList.add('on');
+      document.getElementById('sidebar').classList.remove('open');
+      if (p === 'dashboard') renderDashboard();
+      if (['guud','dawliga','private'].includes(p)) { renderTable(p); fillFilter(p); }
+      if (p === 'admin') { renderAdminLists(); resetBuilder(); }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== SIDEBAR =====
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+    function openSheet(s) { go(s); document.getElementById('sidebar').classList.remove('open'); }
+    function renderSheetLinks() {
+      const c = document.getElementById('sheetLinks');
+      c.innerHTML = Object.keys(S.sheets).map(k =>
+        `<div class="sheet-link" onclick="openSheet('${k}')"><i class="fas fa-table"></i> ${k.charAt(0).toUpperCase()+k.slice(1)}</div>`
+      ).join('');
+    }
+
+    // ===== SLIDER =====
+    let slideIdx = 0;
+    function renderSlides() {
+      const w = document.getElementById('sliderWrap');
+      const dots = document.getElementById('sliderDots');
+      w.querySelectorAll('.slide').forEach(x => x.remove());
+      dots.innerHTML = '';
+      S.slides.forEach((url, i) => {
+        const d = document.createElement('div');
+        d.className = 'slide' + (i === 0 ? ' on' : '');
+        d.style.backgroundImage = `url('${url}')`;
+        w.appendChild(d);
+        const dot = document.createElement('div');
+        dot.className = 'sdot' + (i === 0 ? ' on' : '');
+        dot.onclick = () => goSlide(i);
+        dots.appendChild(dot);
+      });
+      slideIdx = 0;
+    }
+    function nextSlide() {
+      if (S.slides.length < 2) return;
+      slideIdx = (slideIdx + 1) % S.slides.length;
+      goSlide(slideIdx);
+    }
+    function goSlide(i) {
+      slideIdx = i;
+      const slides = document.querySelectorAll('#sliderWrap .slide');
+      const dots = document.querySelectorAll('#sliderDots .sdot');
+      slides.forEach((s, x) => s.classList.toggle('on', x === i));
+      dots.forEach((d, x) => d.classList.toggle('on', x === i));
+    }
+
+    // ===== DASHBOARD BUILDER =====
+    let titleBlockCounter = 0;
+    let entryRowCounter = 0;
+
+    function resetBuilder() {
+      S.editingId = null;
+      document.getElementById('buildSchool').value = '';
+      document.getElementById('titlesContainer').innerHTML = '';
+      titleBlockCounter = 0;
+      entryRowCounter = 0;
+      addTitleBlock();
+      updateBuilderPreview();
+      document.getElementById('editBanner').classList.add('hidden');
+      document.getElementById('submitBtnText').textContent = 'Submit to Dashboard';
+    }
+
+    // ===== TITLE BLOCK =====
+    function addTitleBlock(titleName = '', entries = null) {
+      titleBlockCounter++;
+      const blockId = 'tb_' + titleBlockCounter + '_' + Date.now();
+      const container = document.getElementById('titlesContainer');
+
+      const block = document.createElement('div');
+      block.className = 'title-block';
+      block.id = blockId;
+      block.innerHTML = `
+        <div class="title-block-header">
+          <div class="fg">
+            <label style="font-size:11px;"><i class="fas fa-heading"></i> Title (Category)</label>
+            <input class="fc" placeholder="Tusaale: Tirada Ardayda" value="${titleName}" data-title-name>
+          </div>
+          <button class="title-remove" onclick="removeTitleBlock('${blockId}')" title="Remove Title"><i class="fas fa-xmark"></i></button>
+        </div>
+        <div class="entries-list" id="${blockId}_entries"></div>
+        <div class="add-buttons-row">
+          <button class="btn-add-sub" onclick="addSubTitleOnly('${blockId}')" type="button">
+            <i class="fas fa-plus"></i> Add Sub Tittle
+          </button>
+          <button class="btn-add-value" onclick="addDataEntryOnly('${blockId}')" type="button">
+            <i class="fas fa-plus"></i> Add Data Entry
+          </button>
+        </div>
+      `;
+      container.appendChild(block);
+
+      block.querySelector('[data-title-name]').addEventListener('input', updateBuilderPreview);
+
+      if (entries && entries.length > 0) {
+        entries.forEach(e => addEntryRow(blockId, e.name, e.value, 'both'));
+      } else {
+        addEntryRow(blockId, '', '', 'both');
+      }
+
+      if (!titleName) block.querySelector('[data-title-name]').focus();
+    }
+
+    function removeTitleBlock(blockId) {
+      const block = document.getElementById(blockId);
+      if (!block) return;
+      const total = document.querySelectorAll('#titlesContainer .title-block').length;
+      if (total <= 1) { toast('Waa in ugu yaraan hal Title jiraa'); return; }
+      block.style.opacity = '0';
+      block.style.transform = 'translateX(-20px)';
+      setTimeout(() => { block.remove(); updateBuilderPreview(); }, 200);
+    }
+
+    // ===== ADD SUB TITLE (only) =====
+    function addSubTitleOnly(blockId) {
+      addEntryRow(blockId, '', '', 'sub-only');
+    }
+
+    // ===== ADD DATA ENTRY (only) =====
+    function addDataEntryOnly(blockId) {
+      addEntryRow(blockId, '', '', 'value-only');
+    }
+
+    // ===== ENTRY ROW =====
+    function addEntryRow(blockId, name = '', value = '', mode = 'both') {
+      entryRowCounter++;
+      const rowId = 'er_' + entryRowCounter + '_' + Date.now();
+      const container = document.getElementById(blockId + '_entries');
+      if (!container) return;
+
+      const row = document.createElement('div');
+      row.className = 'entry-row';
+      if (mode === 'sub-only') row.classList.add('sub-only');
+      if (mode === 'value-only') row.classList.add('value-only');
+      row.id = rowId;
+      row.dataset.mode = mode;
+      row.innerHTML = `
+        <div class="fg" data-role="name">
+          <label style="font-size:11px;">Sub Tittle</label>
+          <input class="fc" placeholder="Tusaale: Lab" value="${name}" data-entry-name>
+        </div>
+        <div class="fg" data-role="value">
+          <label style="font-size:11px;">Data Entry</label>
+          <input class="fc" placeholder="Tusaale: 60" value="${value}" data-entry-value>
+        </div>
+        <button class="entry-remove" onclick="removeEntryRow('${rowId}')" title="Remove"><i class="fas fa-xmark"></i></button>
+      `;
+      container.appendChild(row);
+
+      // Focus on the visible input
+      const visibleInput = row.querySelector('input:not([style*="display: none"])');
+      if (!name && !value && visibleInput) visibleInput.focus();
+
+      row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateBuilderPreview));
+    }
+
+    function removeEntryRow(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const parentContainer = row.parentElement;
+      const total = parentContainer.querySelectorAll('.entry-row').length;
+      if (total <= 1) { toast('Waa in ugu yaraan hal entry jiraa Title kasta'); return; }
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(-20px)';
+      setTimeout(() => { row.remove(); updateBuilderPreview(); }, 200);
+    }
+
+    // ===== GET BUILDER DATA =====
+    function getBuilderData() {
+      const school = document.getElementById('buildSchool').value.trim();
+      const titleBlocks = document.querySelectorAll('#titlesContainer .title-block');
+      const titles = [];
+      titleBlocks.forEach(block => {
+        const titleName = block.querySelector('[data-title-name]').value.trim();
+        const entryRows = block.querySelectorAll('.entry-row');
+        const entries = [];
+        entryRows.forEach(r => {
+          const name = r.querySelector('[data-entry-name]')?.value.trim() || '';
+          const value = r.querySelector('[data-entry-value]')?.value.trim() || '';
+          const mode = r.dataset.mode;
+          if (mode === 'sub-only') {
+            if (name) entries.push({ name, value: '' });
+          } else if (mode === 'value-only') {
+            if (value) entries.push({ name: '', value });
+          } else {
+            if (name || value) entries.push({ name, value });
+          }
+        });
+        if (titleName || entries.length > 0) {
+          titles.push({ name: titleName, entries });
+        }
+      });
+      return { school, titles };
+    }
+
+    // ===== PREVIEW =====
+    function updateBuilderPreview() {
+      const { school, titles } = getBuilderData();
+      const preview = document.getElementById('builderPreview');
+      if (!school && titles.length === 0) {
+        preview.innerHTML = '<span class="opacity-60">Weli waxba lama gelin...</span>';
+        return;
+      }
+      let html = '';
+      if (school) html += `<div style="font-weight:800;color:var(--primary);font-size:14px;margin-bottom:8px;"><i class="fas fa-school"></i> ${school}</div>`;
+      titles.forEach(t => {
+        html += `<div style="background:rgba(124,58,237,0.1);border-left:3px solid var(--primary-2);padding:8px 12px;border-radius:8px;margin-bottom:6px;">`;
+        html += `<div style="font-weight:700;color:var(--primary-2);font-size:13px;margin-bottom:4px;">${t.name || '(No Title)'}</div>`;
+        if (t.entries.length === 0) {
+          html += `<span class="opacity-60 text-xs">No entries</span>`;
+        } else {
+          html += `<div style="display:flex;flex-wrap:wrap;gap:6px;">`;
+          t.entries.forEach(e => {
+            const name = e.name || '<em>(no name)</em>';
+            const val = e.value || '<em>(no value)</em>';
+            html += `<span class="ec-sub-tag" style="background:rgba(37,99,235,0.12);padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:600;">${name}: <span style="background:var(--primary);color:#fff;padding:1px 7px;border-radius:99px;font-size:10.5px;margin-left:4px;">${val}</span></span>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
+      });
+      preview.innerHTML = html;
+    }
+
+    // ===== SUBMIT BUILDER =====
+    function submitBuilder() {
+      const { school, titles } = getBuilderData();
+      if (!school) { toast('Geli Magaca Dugsiga'); document.getElementById('buildSchool').focus(); return; }
+      if (titles.length === 0) { toast('Ku dar ugu yaraan hal Title'); return; }
+      for (const t of titles) {
+        if (!t.name) { toast('Buuxi dhammaan Titles'); return; }
+        if (t.entries.length === 0) { toast('Title kastaa waa inuu leeyahay ugu yaraan hal entry'); return; }
+      }
+
+      const btn = event?.target?.closest('button');
+      const original = btn?.innerHTML;
+      if (btn) { btn.innerHTML = '<span class="inline-loader"></span> Submitting...'; btn.disabled = true; }
+
+      setTimeout(() => {
+        if (S.editingId) {
+          const idx = S.dashEntries.findIndex(e => e.id === S.editingId);
+          if (idx !== -1) {
+            S.dashEntries[idx] = { id: S.editingId, school, titles };
+          }
+          toast('Dashboard entry la cusboonaysiiyay ✅');
+        } else {
+          S.dashEntries.push({ id: Date.now(), school, titles });
+          toast('Dashboard entry lagu daray ✅');
+        }
+        saveState();
+        renderDashboard();
+        renderAdminLists();
+        resetBuilder();
+        if (btn) { btn.innerHTML = original; btn.disabled = false; }
+        document.getElementById('dashList').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 600);
+    }
+
+    // ===== EDIT ENTRY =====
+    function editDashEntry(id) {
+      const entry = S.dashEntries.find(e => e.id === id);
+      if (!entry) return;
+      S.editingId = id;
+      document.getElementById('buildSchool').value = entry.school || '';
+      document.getElementById('titlesContainer').innerHTML = '';
+      titleBlockCounter = 0;
+      entryRowCounter = 0;
+      (entry.titles || []).forEach(t => addTitleBlock(t.name, t.entries));
+      if (!entry.titles || entry.titles.length === 0) addTitleBlock();
+      updateBuilderPreview();
+      document.getElementById('editBanner').classList.remove('hidden');
+      document.getElementById('editBannerTitle').textContent = entry.school;
+      document.getElementById('submitBtnText').textContent = 'Update Entry';
+      document.getElementById('dashBuilder').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function cancelEdit() {
+      S.editingId = null;
+      resetBuilder();
+      toast('Edit la joojiyay');
+    }
+
+    function deleteDashEntry(id) {
+      if (!confirm('Ma hubtaa inaad tirtirto entry-kan?')) return;
+      S.dashEntries = S.dashEntries.filter(e => e.id !== id);
+      saveState();
+      renderDashboard();
+      renderAdminLists();
+      toast('Entry la tirtiray ✅');
+    }
+
+    // ===== DASHBOARD RENDER =====
+    function renderDashboard() {
+      const g = document.getElementById('dashGrid');
+      g.innerHTML = '';
+      if (S.dashEntries.length === 0) {
+        g.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-inbox" style="font-size:36px;display:block;margin-bottom:8px;"></i> Xog ma jirto — ka soo geli Admin panel</div>';
+      } else {
+        S.dashEntries.forEach(entry => {
+          const card = document.createElement('div');
+          card.className = 'dash-card';
+          let titlesHtml = '';
+          (entry.titles || []).forEach(t => {
+            let entriesHtml = (t.entries || []).map(e =>
+              `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px dashed var(--border);">
+                <span style="opacity:.7;">${e.name || '—'}</span>
+                <strong style="color:var(--primary);">${e.value || '—'}</strong>
+              </div>`
+            ).join('');
+            titlesHtml += `
+              <div style="background:rgba(124,58,237,0.08);border-left:3px solid var(--primary-2);padding:8px 10px;border-radius:8px;margin-bottom:6px;">
+                <div style="font-weight:700;color:var(--primary-2);font-size:12.5px;margin-bottom:4px;">${t.name}</div>
+                ${entriesHtml}
+              </div>
+            `;
+          });
+          card.innerHTML = `
+            <div class="dc-label"><i class="fas fa-school"></i> ${entry.school}</div>
+            <div style="margin-top:8px;">${titlesHtml}</div>
+          `;
+          g.appendChild(card);
+        });
+      }
+      renderDashboardCharts();
+    }
+
+    function renderDashboardCharts() {
+      if (S.charts.bar) S.charts.bar.destroy();
+      if (S.charts.pie) S.charts.pie.destroy();
+      if (S.charts.line) S.charts.line.destroy();
+
+      const labels = S.dashEntries.map(e => e.school);
+      const totals = S.dashEntries.map(e => {
+        let sum = 0;
+        (e.titles || []).forEach(t => {
+          (t.entries || []).forEach(en => { sum += parseFloat(en.value) || 0; });
+        });
+        return sum;
+      });
+
+      // Bar
+      const bc = document.getElementById('chartSchools')?.getContext('2d');
+      if (bc) {
+        S.charts.bar = new Chart(bc, {
+          type: 'bar',
+          data: {
+            labels: labels.length ? labels : ['No Data'],
+            datasets: [{
+              label: 'Wadar',
+              data: totals.length ? totals : [0],
+              backgroundColor: 'rgba(37,99,235,0.7)',
+              borderColor: 'rgba(37,99,235,1)',
+              borderWidth: 2,
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+              x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } } }
+            }
+          }
+        });
+      }
+
+      // Pie — distribution by entry names
+      const nameTotals = {};
+      S.dashEntries.forEach(e => {
+        (e.titles || []).forEach(t => {
+          (t.entries || []).forEach(en => {
+            const key = en.name || 'Unknown';
+            nameTotals[key] = (nameTotals[key] || 0) + (parseFloat(en.value) || 0);
+          });
+        });
+      });
+      const pieLabels = Object.keys(nameTotals);
+      const pieData = pieLabels.map(k => nameTotals[k]);
+
+      const pc = document.getElementById('chartPie')?.getContext('2d');
+      if (pc) {
+        const colors = ['#2563eb', '#7c3aed', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#ec4899', '#8b5cf6'];
+        S.charts.pie = new Chart(pc, {
+          type: 'doughnut',
+          data: {
+            labels: pieLabels.length ? pieLabels : ['No Data'],
+            datasets: [{
+              data: pieData.length ? pieData : [1],
+              backgroundColor: pieLabels.length ? colors.slice(0, pieLabels.length) : ['#e2e8f0'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '65%',
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+          }
+        });
+      }
+
+      // Line — by Title names
+      const lc = document.getElementById('chartLine')?.getContext('2d');
+      if (lc) {
+        const allTitleNames = [...new Set(S.dashEntries.flatMap(e => (e.titles || []).map(t => t.name)))];
+        const colors = ['#2563eb', '#7c3aed', '#f59e0b', '#10b981', '#ef4444'];
+        const datasets = allTitleNames.map((name, i) => ({
+          label: name,
+          data: S.dashEntries.map(e => {
+            const t = (e.titles || []).find(t => t.name === name);
+            if (!t) return 0;
+            return (t.entries || []).reduce((a, en) => a + (parseFloat(en.value) || 0), 0);
+          }),
+          borderColor: colors[i % colors.length],
+          backgroundColor: colors[i % colors.length] + '20',
+          tension: 0.4,
+          borderWidth: 3,
+          pointBackgroundColor: colors[i % colors.length]
+        }));
+        S.charts.line = new Chart(lc, {
+          type: 'line',
+          data: { labels: labels.length ? labels : ['No Data'], datasets: datasets.length ? datasets : [] },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true }, x: { ticks: { font: { size: 10 } } } }
+          }
+        });
+      }
+    }
+
+    // ===== UPLOAD / VIEW =====
+    function showUpload(s) {
+      document.getElementById(s+'-upload').classList.remove('hidden');
+      document.getElementById(s+'-view').classList.add('hidden');
+    }
+    function showView(s) {
+      document.getElementById(s+'-upload').classList.add('hidden');
+      document.getElementById(s+'-view').classList.remove('hidden');
+      renderTable(s); fillFilter(s);
+    }
+    function submitUpload(s) {
+      const school = document.getElementById(s+'School')?.value.trim() || 'Aan la garanayn';
+      const date = document.getElementById(s+'Date')?.value || new Date().toISOString();
+      const file = document.getElementById(s+'File')?.files[0];
+      const btn = event?.target?.closest('button');
+      const orig = btn?.innerHTML;
+      if (btn) { btn.innerHTML = '<span class="inline-loader"></span> Submitting...'; btn.disabled = true; }
+      setTimeout(() => {
+        S.sheets[s].push({
+          id: Date.now(),
+          school,
+          date: new Date(date).toLocaleString('so-SO'),
+          fileName: file ? file.name : '—',
+          uploaded: new Date().toLocaleString('so-SO')
+        });
+        saveState();
+        renderTable(s); fillFilter(s);
+        document.getElementById(s+'School').value = '';
+        document.getElementById(s+'Date').value = '';
+        document.getElementById(s+'File').value = '';
+        if (btn) { btn.innerHTML = orig; btn.disabled = false; }
+        toast('Si guul leh ayaa loo soo geliyay ✅');
+      }, 700);
+    }
+    function fillFilter(s) {
+      const sel = document.getElementById(s+'Filter');
+      if (!sel) return;
+      const schools = [...new Set(S.sheets[s].map(e => e.school))];
+      sel.innerHTML = '<option value="">All Schools</option>' + schools.map(x => `<option value="${x}">${x}</option>`).join('');
+    }
+    function renderTable(s) {
+      const c = document.getElementById(s+'Table');
+      if (!c) return;
+      const f = document.getElementById(s+'Filter')?.value || '';
+      let data = S.sheets[s];
+      if (f) data = data.filter(e => e.school === f);
+      if (!data.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:8px;"></i> Xog ma jirto</div>'; return; }
+      c.innerHTML = `<table><thead><tr><th>School</th><th>Date</th><th>File</th><th>Uploaded</th></tr></thead><tbody>${
+        data.map(e => `<tr><td>${e.school}</td><td>${e.date}</td><td>${e.fileName}</td><td>${e.uploaded}</td></tr>`).join('')
+      }</tbody></table>`;
+    }
+
+    // ===== DOWNLOAD =====
+    function downloadExcel(s) {
+      const d = S.sheets[s];
+      if (!d.length) { toast('Xog ma jirto'); return; }
+      const ws = XLSX.utils.json_to_sheet(d.map(e => ({ School:e.school, Date:e.date, File:e.fileName, Uploaded:e.uploaded })));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, s);
+      XLSX.writeFile(wb, `Xogaha_${s}_${Date.now()}.xlsx`);
+      toast('Excel la soo dejiyay ✅');
+    }
+    function downloadPDF(s) {
+      const d = S.sheets[s];
+      if (!d.length) { toast('Xog ma jirto'); return; }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text(`Xogaha Dugsiyada - ${s.charAt(0).toUpperCase()+s.slice(1)}`, 14, 22);
+      doc.setFontSize(10);
+      doc.autoTable({
+        head: [['School','Date','File','Uploaded']],
+        body: d.map(e => [e.school, e.date, e.fileName, e.uploaded]),
+        startY: 30,
+        styles: { fontSize:9, cellPadding:4 },
+        headStyles: { fillColor:[37,99,235] }
+      });
+      doc.save(`Xogaha_${s}_${Date.now()}.pdf`);
+      toast('PDF la soo dejiyay ✅');
+    }
+
+    // ===== ADMIN =====
+    function saveAppearance() {
+      S.name = document.getElementById('admName').value.trim() || 'Xogaha Dugsiyada';
+      S.logo = document.getElementById('admLogo').value.trim() || S.logo;
+      applyLook(); saveState();
+      toast('Appearance saved ✅');
+    }
+    function applyLook() {
+      document.getElementById('hName').textContent = S.name;
+      document.getElementById('hLogo').src = S.logo;
+      document.querySelectorAll('img[src*="1791318500798"]').forEach(i => i.src = S.logo);
+    }
+    function changePassword() {
+      const v = document.getElementById('admNewPass').value.trim();
+      if (v.length < 4) { toast('Password-ku waa inuu ka badan yahay 4 xaraf'); return; }
+      S.pass = v; saveState();
+      document.getElementById('admNewPass').value = '';
+      toast('Password la beddelay ✅');
+    }
+    function addSlide() {
+      const u = document.getElementById('slideUrl').value.trim();
+      if (!u) { toast('Geli URL'); return; }
+      S.slides.push(u); renderSlides(); renderAdminLists(); saveState();
+      document.getElementById('slideUrl').value = '';
+      toast('Slide lagu daray ✅');
+    }
+    function removeSlide(i) { S.slides.splice(i,1); renderSlides(); renderAdminLists(); saveState(); toast('Slide la tirtiray'); }
+
+    function renderAdminLists() {
+      const sl = document.getElementById('slideList');
+      if (sl) sl.innerHTML = S.slides.map((u,i) =>
+        `<div class="admin-item"><img src="${u}" alt=""><div class="ai-txt">${u}</div><button class="btn btn-sm btn-danger" onclick="removeSlide(${i})"><i class="fas fa-trash"></i></button></div>`
+      ).join('');
+
+      const dl = document.getElementById('dashList');
+      const countLabel = document.getElementById('dashCountLabel');
+      if (countLabel) countLabel.textContent = `(${S.dashEntries.length} entries)`;
+
+      if (dl) {
+        if (S.dashEntries.length === 0) {
+          dl.innerHTML = '<div class="empty-state" style="padding:24px;"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:6px;"></i> Xog ma jirto — ku dar kor ku xusan</div>';
+        } else {
+          dl.innerHTML = S.dashEntries.map(e => {
+            let titlesHtml = '';
+            (e.titles || []).forEach(t => {
+              const entriesHtml = (t.entries || []).map(en =>
+                `<span class="ec-sub-tag">${en.name || '—'}<span class="ec-sub-val">${en.value || '—'}</span></span>`
+              ).join('');
+              titlesHtml += `
+                <div style="background:rgba(124,58,237,0.08);border-left:3px solid var(--primary-2);padding:6px 10px;border-radius:8px;margin-bottom:6px;">
+                  <div style="font-weight:700;color:var(--primary-2);font-size:12px;margin-bottom:4px;">${t.name}</div>
+                  <div class="ec-subs">${entriesHtml}</div>
+                </div>
+              `;
+            });
+            return `
+              <div class="dash-entry-card" style="flex-direction:column;align-items:stretch;">
+                <div class="flex justify-between items-center" style="margin-bottom:8px;">
+                  <div style="font-size:12px;opacity:.7;"><i class="fas fa-school"></i> <strong>${e.school}</strong></div>
+                  <div class="ec-actions">
+                    <button class="ec-edit" onclick="editDashEntry(${e.id})" title="Edit"><i class="fas fa-pen"></i></button>
+                    <button class="ec-del" onclick="deleteDashEntry(${e.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+                ${titlesHtml}
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      const sm = document.getElementById('sheetManager');
+      if (sm) {
+        let html = '';
+        for (const k of Object.keys(S.sheets)) {
+          html += `<div class="mb-3"><strong class="text-sm">${k.charAt(0).toUpperCase()+k.slice(1)}</strong> <span class="opacity-60 text-xs">(${S.sheets[k].length} records)</span>`;
+          if (S.sheets[k].length) {
+            html += `<div class="mt-2">` + S.sheets[k].map((e,i) =>
+              `<div class="admin-item"><div class="ai-txt"><strong>${e.school}</strong><span class="opacity-60">${e.date}</span></div><button class="btn btn-sm btn-danger" onclick="deleteSheetRecord('${k}',${i})"><i class="fas fa-trash"></i></button></div>`
+            ).join('') + `</div>`;
+          }
+          html += `</div>`;
+        }
+        sm.innerHTML = html;
+      }
+    }
+
+    function deleteSheetRecord(sheet, i) {
+      S.sheets[sheet].splice(i,1);
+      renderTable(sheet); fillFilter(sheet);
+      renderAdminLists(); saveState();
+      toast('Record la tirtiray');
+    }
+
+    function resetSpreadsheet() {
+      const p = document.getElementById('resetPass').value.trim();
+      if (p !== S.pass) { toast('Password khaldan ❌'); return; }
+      S.sheets = { guud: [], dawliga: [], private: [] };
+      saveState();
+      ['guud','dawliga','private'].forEach(s => { renderTable(s); fillFilter(s); });
+      renderAdminLists();
+      document.getElementById('resetPass').value = '';
+      toast('Dhammaan xogaha la tirtiray ✅');
+    }
+
+    // ===== THEME =====
+    function toggleDark() {
+      S.dark = !S.dark;
+      document.body.classList.toggle('dark', S.dark);
+      document.getElementById('darkIcon').className = S.dark ? 'fas fa-sun' : 'fas fa-moon';
+      saveState();
+    }
+
+    // ===== PERSIST =====
+    function saveState() {
+      try {
+        localStorage.setItem('xogDugsiyada', JSON.stringify({
+          dark:S.dark, pass:S.pass, name:S.name, logo:S.logo,
+          sheets:S.sheets, slides:S.slides, dashEntries:S.dashEntries
+        }));
+      } catch(e) {}
+    }
+    function loadState() {
+      try {
+        const r = localStorage.getItem('xogDugsiyada');
+        if (!r) return;
+        const d = JSON.parse(r);
+        if (d.dark !== undefined) { S.dark = d.dark; document.body.classList.toggle('dark', S.dark); document.getElementById('darkIcon').className = S.dark ? 'fas fa-sun' : 'fas fa-moon'; }
+        if (d.pass) S.pass = d.pass;
+        if (d.name) S.name = d.name;
+        if (d.logo) S.logo = d.logo;
+        if (d.sheets) S.sheets = d.sheets;
+        if (d.slides) S.slides = d.slides;
+        if (d.dashEntries) S.dashEntries = d.dashEntries;
+      } catch(e) {}
+    }
+
+    // ===== TOAST =====
+    function toast(m) {
+      const t = document.getElementById('toast');
+      t.textContent = m; t.classList.add('show');
+      clearTimeout(t._t);
+      t._t = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ===== EXPOSE =====
+    window.doLogin = doLogin; window.doLogout = doLogout;
+    window.go = go; window.toggleSidebar = toggleSidebar;
+    window.toggleDark = toggleDark; window.openSheet = openSheet;
+    window.showUpload = showUpload; window.showView = showView;
+    window.submitUpload = submitUpload; window.renderTable = renderTable;
+    window.downloadExcel = downloadExcel; window.downloadPDF = downloadPDF;
+    window.saveAppearance = saveAppearance; window.changePassword = changePassword;
+    window.addSlide = addSlide; window.removeSlide = removeSlide;
+    window.resetSpreadsheet = resetSpreadsheet; window.deleteSheetRecord = deleteSheetRecord;
+    window.addTitleBlock = addTitleBlock; window.removeTitleBlock = removeTitleBlock;
+    window.addSubTitleOnly = addSubTitleOnly; window.addDataEntryOnly = addDataEntryOnly;
+    window.addEntryRow = addEntryRow; window.removeEntryRow = removeEntryRow;
+    window.updateBuilderPreview = updateBuilderPreview; window.submitBuilder = submitBuilder;
+    window.resetBuilder = resetBuilder; window.cancelEdit = cancelEdit;
+    window.editDashEntry = editDashEntry; window.deleteDashEntry = deleteDashEntry;
+  </script>
+</body>
+</html>
